@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>UEFA Champions League Standings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            user-select: none;
+        }
+        .header {
+            position: sticky;
+            top: 0px;
+            background-color: #0b2545;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+        .nav {
+            position: sticky;
+            top: 41px;
+            background-color: #0b2545;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+        .nav a.active {
+            border-bottom: 2px solid white;
+        }
+        .container {
+            width: 60%;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            color: black;
+            text-decoration: none;
+        }
+        .matchday {
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .match {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .team {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        .team img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        .team span {
+            margin-left: 10px;
+        }
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 20px;
+        }
+        .status {
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>UEFA Champions League</h1>
+    </div>
+    <div class="nav">
+        <a class="active" href="Match.html">MATCHES</a>
+        <a href="News.html">NEWS</a>
+        <a href="Standings 2024-25.html">STANDINGS</a>
+        <a href="Top scorer.html">STATS</a>
+        <a href="Players.html">PLAYERS</a>
+    </div>
+    <div class="container" id="match-container"></div>
+
+    <script>
+        // Function to fetch and render the matches from the JSON file
+        async function fetchMatches() {
+            try {
+                const response = await fetch('matchday.json'); // Fetch the JSON data
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const matches = await response.json(); // Parse the JSON data
+                renderMatches(matches); // Call the render function with the data
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Function to render the matches into the HTML
+        function renderMatches(matches) {
+            const container = document.getElementById('match-container');
+            matches.forEach((matchday, index) => {
+                // Add a line break before the next matchday if it's not the first one
+                if (index > 0) {
+                    const lineBreak = document.createElement('br');
+                    container.appendChild(lineBreak);
+                }
+
+                const matchdayDiv = document.createElement('div');
+                matchdayDiv.className = 'matchday';
+                matchdayDiv.innerText = matchday.matchday;
+                container.appendChild(matchdayDiv);
+
+                matchday.games.forEach(game => {
+                    const match = document.createElement('div');
+                    match.className = 'match';
+
+                    const homeTeam = document.createElement ('div');
+                    homeTeam.className = 'team';
+                    const homeLogo = document.createElement('img');
+                    homeLogo.src = game.logohome + '.svg'; // Assuming logos are in SVG format
+                    const homeName = document.createElement('span');
+                    homeName.innerText = game.home;
+                    homeTeam.appendChild(homeLogo);
+                    homeTeam.appendChild(homeName);
+
+                    const awayTeam = document.createElement('div');
+                    awayTeam.className = 'team';
+                    const awayLogo = document.createElement('img');
+                    awayLogo.src = game.logoaway + '.svg'; // Assuming logos are in SVG format
+                    const awayName = document.createElement('span');
+                    awayName.innerText = game.away;
+                    awayTeam.appendChild(awayLogo);
+                    awayTeam.appendChild(awayName);
+
+                    const score = document.createElement('div');
+                    score.className = 'score';
+                    score.innerText = `${game.homeScore} - ${game.awayScore}`;
+
+                    const status = document.createElement('div');
+                    status.className = 'status';
+                    status.innerText = game.status;
+
+                    match.appendChild(homeTeam);
+                    match.appendChild(score);
+                    match.appendChild(awayTeam);
+                    match.appendChild(status);
+                    container.appendChild(match);
+                });
+            });
+        }
+        
+
+        // Call the fetch function to load matches on page load
+        fetchMatches();
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            width: 60%;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: #0b2545;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+        .nav {
+            position: sticky;
+            top: 41px;
+            background-color: #0b2545;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+        .nav a.active {
+            border-bottom: 2px solid white;
+        }
+        .content {
+            padding: 20px;
+        }
+        .table-container {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <i class="fas fa-arrow-left">
+        </i>
+        <h1>
+         UEFA Champions League
+        </h1>
+       </div>
+       <div class="nav">
+        <a href="Match.html">
+         MATCHES
+        </a>
+        <a href="News.html">
+         NEWS
+        </a>
+        <a class="active" href="Standings 2024-25.html">
+         STANDINGS
+        </a>
+        <a href="Top scorer.html">
+         STATS
+        </a>
+        <a href="Players.html">
+         PLAYERS
+        </a>
+       </div>
+<div class="container">
+<h1>League Table</h1>
+<table id="league-table">
+    <thead>
+        <tr>
+            <th>Position</th>
+            <th>Club</th>
+            <th>MP</th>
+            <th>W</th>
+            <th>D</th>
+            <th>L</th>
+            <th>GF</th>
+            <th>GA</th>
+            <th>GD</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+</div>
+<script>
+    // Fetch the JSON data from matchday.json
+    fetch('matchday.json')
+        .then(response => response.json())
+        .then(data => createLeagueTable(data))
+        .catch(error => console.error('Error fetching data:', error));
+
+    // Function to create the league table
+    function createLeagueTable(data) {
+        const teams = {};
+
+        // Process each matchday and each game
+        data.forEach(matchday => {
+            matchday.games.forEach(game => {
+                const { home, homeScore, away, awayScore } = game;
+
+                // Initialize teams if not already done
+                if (!teams[home]) teams[home] = { name: home, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 };
+                if (!teams[away]) teams[away] = { name: away, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 };
+
+                // Update played matches
+                teams[home].played++;
+                teams[away].played++;
+
+                // Update goals
+                teams[home].goalsFor += homeScore;
+                teams[home].goalsAgainst += awayScore;
+                teams[away].goalsFor += awayScore;
+                teams[away].goalsAgainst += homeScore;
+
+                // Determine results and update points
+                if (homeScore > awayScore) {
+                    teams[home].won++;
+                    teams[away].lost++;
+                    teams[home].points += 3;
+                } else if (homeScore < awayScore) {
+                    teams[away].won++;
+                    teams[home].lost++;
+                    teams[away].points += 3;
+                } else {
+                    teams[home].drawn++;
+                    teams[away].drawn++;
+                    teams[home].points++;
+                    teams[away].points++;
+                }
+            });
+        });
+
+        // Convert teams object to array and calculate goal difference
+        const leagueTable = Object.values(teams).map(team => {
+            team.goalDifference = team.goalsFor - team.goalsAgainst;
+            return team;
+        });
+
+        // Sort teams by points, goal difference, and goals scored
+        leagueTable.sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+            return b.goalsFor - a.goalsFor;
+        });
+
+        // Populate the table in the HTML
+        const tableBody = document.getElementById('league-table').getElementsByTagName('tbody')[0];
+        leagueTable.forEach((team, index) => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).innerText = index + 1; // Position
+            row.insertCell(1).innerText = team.name; // Team
+            row.insertCell(2).innerText = team.played; // Played
+            row.insertCell(3).innerText = team.won; // Won
+            row.insertCell(4).innerText = team.drawn; // Drawn
+            row.insertCell(5).innerText = team.lost; // Lost
+            row.insertCell(6).innerText = team .goalsFor; // Goals For
+            row.insertCell(7).innerText = team.goalsAgainst; // Goals Against
+            row.insertCell(8).innerText = team.goalDifference; // Goal Difference
+            row.insertCell(9).innerText = team.points; // Points
+        });
+    }
+</script>
+
+</body>
+</html>
