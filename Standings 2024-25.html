@@ -70,132 +70,175 @@
         th {
             background-color: #f5f5f5;
         }
+        .red-card {
+            width: 16px; /* Adjust size as needed */
+            height: 16px; /* Adjust size as needed */
+            margin-left: 5px;
+        }
+        .team-logo {
+            width: 24px; /* Adjust size as needed */
+            height: 24px; /* Adjust size as needed */
+            margin-right: 10px;
+        }
+        .last-five {
+            display: inline-block;
+            flex-direction: column;
+            align-items: center;
+        }
+        .last-five img {
+            width: 16px; /* Adjust size as needed */
+            height: 16px; /* Adjust size as needed */
+            margin: 2px 0; /* Space between icons */
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <i class="fas fa-arrow-left">
-        </i>
-        <h1>
-         UEFA Champions League
-        </h1>
-       </div>
-       <div class="nav">
-        <a href="Match.html">
-         MATCHES
-        </a>
-        <a href="News.html">
-         NEWS
-        </a>
-        <a class="active" href="Standings 2024-25.html">
-         STANDINGS
-        </a>
-        <a href="Top scorer.html">
-         STATS
-        </a>
-        <a href="Players.html">
-         PLAYERS
-        </a>
-       </div>
-<div class="container">
-<h1>League Table</h1>
-<table id="league-table">
-    <thead>
-        <tr>
-            <th>Position</th>
-            <th>Club</th>
-            <th>MP</th>
-            <th>W</th>
-            <th>D</th>
-            <th>L</th>
-            <th>GF</th>
-            <th>GA</th>
-            <th>GD</th>
-            <th>Points</th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-</div>
-<script>
-    // Fetch the JSON data from matchday.json
-    fetch('matchday.json')
-        .then(response => response.json())
-        .then(data => createLeagueTable(data))
-        .catch(error => console.error('Error fetching data:', error));
+        <h1>UEFA Champions League</h1>
+    </div>
+    <div class="nav">
+        <a href="Match.html">MATCHES</a>
+        <a href="News.html">NEWS</a>
+        <a class="active" href="Standings 2024-25.html">STANDINGS</a>
+        <a href="Top scorer.html">STATS</a>
+        <a href="Players.html">PLAYERS</a>
+    </div>
+    <div class="container">
+        <h1>League Table</h1>
+        <table id="league-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Club</th>
+                    <th>MP</th>
+                    <th>W</th>
+                    <th>D</th>
+                    <th>L</th>
+                    <th>GF</th>
+                    <th>GA</th>
+                    <th>GD</th>
+                    <th>Points</th>
+                    <th>Last 5</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div id="indices">
+            <h2>Qualification</h2>
+            <ul>
+                <li>1st to 8th place: Next Round</li>
+                <li>9th to 24th place: Play offs</li>
+            </ul>
+            <h2>Last 5 Matches</h2>
+            <ul>
+                <li><img src="win.svg" alt="Win">: Win</li>
+                <li><img src="draw.svg" alt="Draw">: Draw</li>
+                <li><img src="lose.svg" alt="Loss">: Loss</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        // Fetch the JSON data from matchday.json
+        fetch('matchday.json')
+            .then(response => response.json())
+            .then(data => createLeagueTable(data))
+            .catch(error => console.error('Error fetching data:', error));
 
-    // Function to create the league table
-    function createLeagueTable(data) {
-        const teams = {};
+        // Function to create the league table
+        function createLeagueTable(data) {
+            const teams = {};
 
-        // Process each matchday and each game
-        data.forEach(matchday => {
-            matchday.games.forEach(game => {
-                const { home, homeScore, away, awayScore } = game;
+            // Process each matchday and each game
+            data.forEach(matchday => {
+                matchday.games.forEach(game => {
+                    const { home, homeScore, away, awayScore } = game;
 
-                // Initialize teams if not already done
-                if (!teams[home]) teams[home] = { name: home, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 };
-                if (!teams[away]) teams[away] = { name: away, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 };
+                    // Initialize teams if not already done
+                    if (!teams[home]) teams[home] = { name: home, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0, lastFive: [] };
+                    if (!teams[away]) teams[away] = { name: away, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0, lastFive: [] };
 
-                // Update played matches
-                teams[home].played++;
-                teams[away].played++;
+                    // Update played matches
+                    teams[home].played++;
+                    teams[away].played++;
 
-                // Update goals
-                teams[home].goalsFor += homeScore;
-                teams[home].goalsAgainst += awayScore;
-                teams[away].goalsFor += awayScore;
-                teams[away].goalsAgainst += homeScore;
+                    // Update goals
+                    teams[home].goalsFor += homeScore;
+                    teams[home].goalsAgainst += awayScore;
+                    teams[away].goalsFor += awayScore;
+                    teams[away].goalsAgainst += homeScore;
 
-                // Determine results and update points
-                if (homeScore > awayScore) {
-                    teams[home].won++;
-                    teams[away].lost++;
-                    teams[home].points += 3;
-                } else if (homeScore < awayScore) {
-                    teams[away].won++;
-                    teams[home].lost++;
-                    teams[away].points += 3;
-                } else {
-                    teams[home].drawn++;
-                    teams[away].drawn++;
-                    teams[home].points++;
-                    teams[away].points++;
-                }
+                    // Determine results and update points
+                    if (homeScore > awayScore) {
+                        teams[home].won++;
+                        teams[away].lost++;
+                        teams[home].points += 3;
+                        teams[home].lastFive.push('win.svg');
+                        teams[away].lastFive.push('lose.svg');
+                    } else if (homeScore < awayScore) {
+                        teams[away].won++;
+                        teams[home].lost++;
+                        teams[away].points += 3;
+                        teams[away].lastFive.push('win.svg');
+                        teams[home].lastFive.push('lose.svg');
+                    } else {
+                        teams[home].drawn++;
+                        teams[away].drawn++;
+                        teams[home].points++;
+                        teams[away].points++;
+                        teams[home].lastFive.push('draw.svg');
+                        teams[away].lastFive.push('draw.svg');
+                    }
+
+                    // Keep only the last five results
+                    if (teams[home].lastFive.length > 5) teams[home].lastFive.shift();
+                    if (teams[away].lastFive.length > 5) teams[away].lastFive.shift();
+                });
             });
-        });
 
-        // Convert teams object to array and calculate goal difference
-        const leagueTable = Object.values(teams).map(team => {
-            team.goalDifference = team.goalsFor - team.goalsAgainst;
-            return team;
-        });
+            // Convert teams object to array and calculate goal difference
+            const leagueTable = Object.values(teams).map(team => {
+                team.goalDifference = team.goalsFor - team.goalsAgainst;
+                return team;
+            });
 
-        // Sort teams by points, goal difference, and goals scored
-        leagueTable.sort((a, b) => {
-            if (b.points !== a.points) return b.points - a.points;
-            if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
-            return b.goalsFor - a.goalsFor;
-        });
+            // Sort teams by points, goal difference, and goals scored
+            leagueTable.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+                return b.goalsFor - a.goalsFor;
+            });
 
-        // Populate the table in the HTML
-        const tableBody = document.getElementById('league-table').getElementsByTagName('tbody')[0];
-        leagueTable.forEach((team, index) => {
-            const row = tableBody.insertRow();
-            row.insertCell(0).innerText = index + 1;
-            row.insertCell(1).innerText = team.name;
-            row.insertCell(2).innerText = team.played;
-            row.insertCell(3).innerText = team.won;
-            row.insertCell(4).innerText = team.drawn;
-            row.insertCell(5).innerText = team.lost; 
-            row.insertCell(6).innerText = team .goalsFor; 
-            row.insertCell(7).innerText = team.goalsAgainst; 
-            row.insertCell(8).innerText = team.goalDifference; 
-            row.insertCell(9).innerText = team.points; 
-        });
-    }
-</script>
+            // Populate the table in the HTML
+            const tableBody = document.getElementById('league-table').getElementsByTagName('tbody')[0];
+            leagueTable.forEach((team, index) => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).innerText = index + 1; // Position
+                const logoCell = row.insertCell(1);
+                const logoImg = document.createElement('img');
+                logoImg.src = `${team.name}.png`; // Assuming logo is named after the team
+                logoImg.className = 'team-logo';
+                logoCell.appendChild(logoImg);
+                logoCell.appendChild(document.createTextNode(team.name)); // Team
+                row.insertCell(2).innerText = team.played; // Played
+                row.insertCell(3).innerText = team.won; // Won
+                row.insertCell(4).innerText = team.drawn; // Drawn
+                row.insertCell(5).innerText = team.lost; // Lost
+                row.insertCell(6).innerText = team.goalsFor; // Goals For
+                row.insertCell(7).innerText = team.goalsAgainst; // Goals Against
+                row.insertCell(8).innerText = team.goalDifference; // Goal Difference
+                row.insertCell(9).innerText = team.points; // Points
 
+                // Last 5 Matches
+                const lastFiveCell = row.insertCell(10);
+                lastFiveCell.className = 'last-five';
+                team.lastFive.forEach(result => {
+                    const resultImg = document.createElement('img');
+                    resultImg.src = result; // Use the SVG path
+                    lastFiveCell.appendChild(resultImg);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
