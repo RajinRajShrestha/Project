@@ -89,6 +89,11 @@
             text-align: center;
             width: 60px;
         }
+        .red-card {
+            width: 16px; /* Adjust size as needed */
+            height: 16px; /* Adjust size as needed */
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -108,12 +113,12 @@
         // Function to fetch and render the matches from the JSON file
         async function fetchMatches() {
             try {
-                const response = await fetch('matchday.json');
+                const response = await fetch('matchday.json'); // Fetch the JSON data
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-                const matches = await response.json();
-                renderMatches(matches);
+                const matches = await response.json(); // Parse the JSON data
+                renderMatches(matches); // Call the render function with the data
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
             }
@@ -138,23 +143,39 @@
                     const match = document.createElement('div');
                     match.className = 'match';
 
-                    const homeTeam = document.createElement ('div');
+                    const homeTeam = document.createElement('div');
                     homeTeam.className = 'team';
                     const homeLogo = document.createElement('img');
-                    homeLogo.src = game.logohome + '.svg'; // Assuming logos are in SVG format
+                    homeLogo.src = game.logohome + '.png';
                     const homeName = document.createElement('span');
                     homeName.innerText = game.home;
                     homeTeam.appendChild(homeLogo);
                     homeTeam.appendChild(homeName);
 
+                    // Add red card image for home team
+                    if (game.redcardhome) {
+                        const homeRedCard = document.createElement('img');
+                        homeRedCard.src = game.redcardhome + '.svg';
+                        homeRedCard.className = 'red-card';
+                        homeTeam.appendChild(homeRedCard);
+                    }
+
                     const awayTeam = document.createElement('div');
                     awayTeam.className = 'team';
                     const awayLogo = document.createElement('img');
-                    awayLogo.src = game.logoaway + '.png'; 
+                    awayLogo.src = game.logoaway + '.png';
                     const awayName = document.createElement('span');
                     awayName.innerText = game.away;
                     awayTeam.appendChild(awayLogo);
                     awayTeam.appendChild(awayName);
+
+                    // Add red card image for away team
+                    if (game.redcardaway) {
+                        const awayRedCard = document.createElement('img');
+                        awayRedCard.src = game.redcardaway + '.svg';
+                        awayRedCard.className = 'red-card';
+                        awayTeam.appendChild(awayRedCard);
+                    }
 
                     const score = document.createElement('div');
                     score.className = 'score';
@@ -172,7 +193,6 @@
                 });
             });
         }
-        
 
         // Call the fetch function to load matches on page load
         fetchMatches();
