@@ -108,12 +108,12 @@
         // Function to fetch and render the matches from the JSON file
         async function fetchMatches() {
             try {
-                const response = await fetch('matchday.json'); // Fetch the JSON data
+                const response = await fetch('matchday.json');
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-                const matches = await response.json(); // Parse the JSON data
-                renderMatches(matches); // Call the render function with the data
+                const matches = await response.json();
+                renderMatches(matches);
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
             }
@@ -150,7 +150,7 @@
                     const awayTeam = document.createElement('div');
                     awayTeam.className = 'team';
                     const awayLogo = document.createElement('img');
-                    awayLogo.src = game.logoaway + '.svg'; // Assuming logos are in SVG format
+                    awayLogo.src = game.logoaway + '.png'; 
                     const awayName = document.createElement('span');
                     awayName.innerText = game.away;
                     awayTeam.appendChild(awayLogo);
