@@ -183,16 +183,16 @@
         const tableBody = document.getElementById('league-table').getElementsByTagName('tbody')[0];
         leagueTable.forEach((team, index) => {
             const row = tableBody.insertRow();
-            row.insertCell(0).innerText = index + 1; // Position
-            row.insertCell(1).innerText = team.name; // Team
-            row.insertCell(2).innerText = team.played; // Played
-            row.insertCell(3).innerText = team.won; // Won
-            row.insertCell(4).innerText = team.drawn; // Drawn
-            row.insertCell(5).innerText = team.lost; // Lost
-            row.insertCell(6).innerText = team .goalsFor; // Goals For
-            row.insertCell(7).innerText = team.goalsAgainst; // Goals Against
-            row.insertCell(8).innerText = team.goalDifference; // Goal Difference
-            row.insertCell(9).innerText = team.points; // Points
+            row.insertCell(0).innerText = index + 1;
+            row.insertCell(1).innerText = team.name;
+            row.insertCell(2).innerText = team.played;
+            row.insertCell(3).innerText = team.won;
+            row.insertCell(4).innerText = team.drawn;
+            row.insertCell(5).innerText = team.lost; 
+            row.insertCell(6).innerText = team .goalsFor; 
+            row.insertCell(7).innerText = team.goalsAgainst; 
+            row.insertCell(8).innerText = team.goalDifference; 
+            row.insertCell(9).innerText = team.points; 
         });
     }
 </script>
